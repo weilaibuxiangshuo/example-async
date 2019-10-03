@@ -1,0 +1,28 @@
+import time
+import asyncio
+
+async def run(x):
+    print("waiting:%d"%x)
+
+
+start=time.time()
+coroutine = run(2)
+# print(coroutine)
+
+loop = asyncio.get_event_loop()
+"""将协程对象加入到事件循环,协程对象不能直接运行，在注册事件循环的时候，其实
+是run_until_complete方法将协程对象包装成了一个任务对象,task对象是Future类的子类，
+保存了协程运行后的状态，用于未来获取协程的结果"""
+# loop.run_until_complete(coroutine)
+
+#创建任务(两种方式,常用第一种方式)
+task=asyncio.ensure_future(coroutine)
+print(task)
+# task=loop.create_task(coroutine)
+
+#将任务加入到事件循环中
+loop.run_until_complete(task)
+print(task)
+
+end=time.time()
+print("time:",end-start)
