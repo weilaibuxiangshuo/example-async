@@ -1,0 +1,37 @@
+# www.163.com www.baidu.com www.sohu.com www.sina.com.cn www.google.com
+#    3             5           2              6
+
+import asyncio
+import time
+import threading
+
+def start_loop(lp):
+    """自动事件循环"""
+    asyncio.set_event_loop(lp)
+    lp.run_forever()
+
+async def wget(urlStr):
+    print("加载%s---"%urlStr)
+    connet = asyncio.open_connection(urlStr,80)
+    reader,writer = await connet
+    #连接成功
+    header = "GET /HTTP/1.0\r\nHost:%s\r\n\r\n"%urlStr
+    writer.write(header.encode("utf-8"))
+    await writer.drain()
+    while True:
+        line=await reader.readline()
+        if line== b'\r\n':
+            break
+        print("%s header--->%s"%(urlStr,line.decode('utf-8').strip()))
+    writer.close()
+
+
+
+
+
+
+loop = asyncio.get_event_loop()
+threading.Thread(target=start_loop,args=(loop,)).start()
+#给时间循环添加任务
+for url in ["www.163.com","www.baidu.com","www.sohu.com","www.sina.com.cn"]:
+    asyncio.run_coroutine_threadsafe(wget(url),loop)
