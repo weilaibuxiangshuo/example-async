@@ -1,0 +1,44 @@
+"""
+并发：指多个任务需要同时进行
+并行：同一时刻有多个任务执行
+并发类似一个老师在同一个时间段辅导不同的人功课，
+并行类似好几个老师分别同时辅导多个学生。
+"""
+
+import time
+import asyncio
+
+async def run(x):
+    print("waiting:%d"%x)
+    await asyncio.sleep(x)
+    return "done after %ds:"%x
+
+
+start=time.time()
+
+
+coroutine1 = run(2)
+coroutine2 = run(3)
+coroutine3 = run(4)
+coroutine4 = run(5)
+
+tasks=[
+asyncio.ensure_future(coroutine1),
+asyncio.ensure_future(coroutine2),
+asyncio.ensure_future(coroutine3),
+asyncio.ensure_future(coroutine4),
+]
+
+loop = asyncio.get_event_loop()
+
+#任务添加两种方式，第一种：
+loop.run_until_complete(asyncio.wait(tasks))
+#任务添加两种方式，第二种：
+loop.run_until_complete(asyncio.gather(*tasks))
+
+
+for task in tasks:
+    print("Tash 返回值:",task.result())
+
+end=time.time()
+print("time:",end-start)
