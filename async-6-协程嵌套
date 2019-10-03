@@ -1,0 +1,71 @@
+import time
+import asyncio
+
+async def run(x):
+    print("waiting:%d"%x)
+    await asyncio.sleep(x)
+    return "done after %ds:"%x
+
+
+start=time.time()
+
+
+async def main():
+    coroutine1 = run(2)
+    coroutine2 = run(3)
+    coroutine3 = run(4)
+    coroutine4 = run(5)
+    tasks=[
+    asyncio.ensure_future(coroutine1),
+    asyncio.ensure_future(coroutine2),
+    asyncio.ensure_future(coroutine3),
+    asyncio.ensure_future(coroutine4),
+    ]
+    #1 返回future对象
+    # dones,pendings=await asyncio.wait(tasks)
+    # print("-------------")
+    # for task in dones:
+    #     print("Task 返回值",task.result())
+
+    #2 不是返回future对象，直接返回值
+    # results= await asyncio.gather(*tasks)
+    # for result in results:
+    #     print("Task 返回值",result)
+
+    #3
+    # return await asyncio.wait(tasks)
+
+    #4
+    # return await asyncio.gather(*tasks)
+
+    #5
+    for task in asyncio.as_completed(tasks):
+        result = await task
+        print("task 返回值",result)
+
+
+
+loop = asyncio.get_event_loop()
+
+#任务添加5种方式，对应上面
+#1
+# loop.run_until_complete(main())
+
+#2：
+# loop.run_until_complete(main())
+
+#3:
+# dones,pendings=loop.run_until_complete(main())
+# for task in dones:
+#         print("Task 返回值",task.result())
+
+#4:
+# results = loop.run_until_complete(main())
+# for result in results:
+#     print("Task 返回值",result)
+
+#5:
+loop.run_until_complete(main())
+
+end=time.time()
+print("time:",end-start)
