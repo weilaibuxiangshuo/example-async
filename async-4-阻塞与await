@@ -1,0 +1,26 @@
+import time
+import asyncio
+
+#asyncs可以定义协程对象，使用await可以针对耗时的操作进行挂起，就生成器晨的yield一样
+#函数交出控制权,协程遇到await()，事件循环将会挂起该协程，执行别的协调,直到其它协程也挂起或
+#执行完毕，再进行下一个协程的执行
+async def run(x):
+    print("waiting:%d"%x)
+    #调用了一个耗时的io操作
+    # asyncio.sleep另一个协程对象
+    await asyncio.sleep(x)
+    return "done after %ds:"%x
+
+def callback(future):
+    print("callback:",future.result())
+
+start=time.time()
+
+coroutine = run(2)
+loop = asyncio.get_event_loop()
+task=asyncio.ensure_future(coroutine)
+task.add_done_callback(callback)
+loop.run_until_complete(task)
+
+end=time.time()
+print("time:",end-start)
