@@ -1,0 +1,21 @@
+import time
+import asyncio
+
+#通过async关键字定义了一个协程，协程不能直接运行需要将协程加入到事件循环中
+async def run(x):
+    print("waiting:%d"%x)
+
+
+start=time.time()
+#得到一个协程对象，这个时候run()函数没有执行
+coroutine = run(2)
+# print(coroutine)
+
+#创建一个事件循环（注意：真实情况是在async模块中获取一个引用）
+loop = asyncio.get_event_loop()
+
+#将协程对象加入到事件循环
+loop.run_until_complete(coroutine)
+
+end=time.time()
+print("time:",end-start)
